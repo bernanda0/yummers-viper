@@ -11,12 +11,14 @@ import Foundation
 protocol HomePageViewProtocol: AnyObject {
     func showMeals(_ meals: [MealEntity])
     func showError(_ error: Error)
+    func showFilterView()
     func showLoading()
     func hideLoading()
 }
 
 protocol HomePagePresenterProtocol: Presentable {
     func didSelectMeal(_ meal: MealEntity)
+    func didSearchMeal(_ searchText: String)
 }
 
 class HomePagePresenter: HomePagePresenterProtocol {
@@ -36,7 +38,11 @@ class HomePagePresenter: HomePagePresenterProtocol {
     
     func viewDidLoad() {
         view?.showLoading()
-        interactor.fetchMeals(key: "Chicken") { [weak self] result in
+        view?.showFilterView()
+    }
+    
+    func didSearchMeal(_ searchText: String) {
+        self.interactor.fetchMeals(key: searchText) { [weak self] result in
             DispatchQueue.main.async {
                 self?.view?.hideLoading()
                 switch result {

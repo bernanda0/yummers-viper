@@ -56,4 +56,17 @@ final class MealsUseCaseTests: XCTestCase {
             XCTFail("Search meal use case failed with error: \(error.localizedDescription)")
         }
     }
+    
+    func testGetMealAreas() async throws {
+        let useCase = DIContainer.shared.mealsUseCase
+        
+        let areas = try await useCase.getMealAreas()
+        switch areas {
+            case .success(let areas):
+            print(areas)
+            XCTAssertFalse(areas.isEmpty, "Expected non-empty areas list.")
+        case .failure(let error):
+            XCTFail("Get meal areas use case failed with error: \(error.localizedDescription)")
+        }
+    }
 }

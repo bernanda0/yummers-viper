@@ -8,16 +8,17 @@ import Alamofire
 import Foundation
 
 enum MealEndpoint {
-//    case text
+    //    case text
     case search
+    case getAreas
 }
 
 extension MealEndpoint: EndPointType {
     var baseURL: String {
         switch APIManager.networkEnviroment {
-            case .dev: return "https://www.themealdb.com/api/json/"
-            case .production: return ""
-            case .stage: return ""
+        case .dev: return "https://www.themealdb.com/api/json/"
+        case .production: return ""
+        case .stage: return ""
         }
     }
     
@@ -34,20 +35,21 @@ extension MealEndpoint: EndPointType {
             
         case .search:
             return "search.php"
+        case .getAreas:
+            return "list.php/?a=list"
         }
     }
     
     var httpMethod: HTTPMethod {
         switch self {
-        case .search:
+        case .search, .getAreas:
             return .get
-        
         }
     }
     
     var headers: HTTPHeaders? {
         switch self {
-        case .search:
+        case .search, .getAreas:
             return ["Content-Type": "application/json",
                     "X-Requested-With": "XMLHttpRequest"]
         }
@@ -66,8 +68,9 @@ extension MealEndpoint: EndPointType {
             return URLEncoding.default
         default:
             return JSONEncoding.default
-        
+            
         }
     }
     
 }
+

@@ -7,6 +7,7 @@
 
 protocol MealsRepository {
     func searchMeals(key: String) async throws -> [MealDTO]
+    func getAreas() async throws -> [AreaDTO]
 }
 
 class MealsRepositoryImpl: MealsRepository {
@@ -18,5 +19,9 @@ class MealsRepositoryImpl: MealsRepository {
 
     func searchMeals(key: String) async throws -> [MealDTO] {
         return try await apiService.searchMeals(key: key)
+    }
+    
+    func getAreas() async throws -> [AreaDTO] {
+        return try await apiService.getMealsArea()
     }
 }

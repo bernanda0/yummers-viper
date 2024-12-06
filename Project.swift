@@ -17,7 +17,7 @@ let project = Project(
             bundleId: bundleId(for: appName),
             infoPlist: .extendingDefault(
                 with: [
-                    "UILaunchStoryboardName": "LaunchScreen",
+                    // "UILaunchStoryboardName": "LaunchScreen",
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": false,
                         "UISceneConfigurations": [
@@ -25,7 +25,7 @@ let project = Project(
                                 [
                                     "UISceneConfigurationName": "Default Configuration",
                                     "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
-                                    "UISceneStoryboardFile": "Main"
+                                    // "UISceneStoryboardFile": "Main"
                                 ]
                             ]
                         ]
@@ -33,7 +33,8 @@ let project = Project(
                 ]
             ),
             sources: ["yummersApp/Sources/**"],
-            resources: ["yummersApp/Resources/**", "yummersApp/Sources/**/*.storyboard", "yummersApp/Sources/**/*.xib"],
+            resources: ["yummersApp/Resources/**"],
+            // "yummersApp/Sources/**/*.storyboard", "yummersApp/Sources/**/*.xib",
             dependencies: [
                 .external(name: "Alamofire") 
             ]

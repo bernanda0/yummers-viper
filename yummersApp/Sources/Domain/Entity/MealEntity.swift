@@ -4,9 +4,9 @@
 //
 //  Created by mac.bernanda on 03/12/24.
 //
-
 import Foundation
 import UIKit
+import Combine
 
 class MealEntity {
     let id: String
@@ -19,8 +19,8 @@ class MealEntity {
     let drinkAlternate: String
     let ingredients: [String]
     
-    private var thumbnailImage: UIImage = UIImage(systemName: "photo")! // Placeholder image
-    private var isImageLoaded = false
+    @Published private(set) var thumbnailImage: UIImage = UIImage(systemName: "photo")! // Placeholder image
+    private var cancellables = Set<AnyCancellable>()
     
     init(id: String, name: String, category: String, area: String, instructions: String, thumbnailURL: URL?, youtubeURL: URL?, drinkAlternate: String, ingredients: [String]) {
         self.id = id
@@ -36,7 +36,6 @@ class MealEntity {
         loadThumbnailImage()
     }
     
-    // Initializer that accepts MealDTO and handles optional values
     init(from dto: MealDTO) {
         self.id = dto.idMeal ?? "Unknown ID"
         self.name = dto.strMeal ?? "Unknown Name"
@@ -46,32 +45,30 @@ class MealEntity {
         self.thumbnailURL = URL(string: dto.strMealThumb ?? "")
         self.youtubeURL = URL(string: dto.strYoutube ?? "")
         self.drinkAlternate = dto.strDrinkAlternate ?? "No drink alternative"
-        
-        // Handling ingredients from DTO
         self.ingredients = dto.ingredients.isEmpty ? ["No Ingredients"] : dto.ingredients
+        
         loadThumbnailImage()
     }
     
     private func loadThumbnailImage() {
-        guard let url = thumbnailURL, !isImageLoaded else { return }
+        guard let url = thumbnailURL else { return }
         
-        Task {
-            do {
-                let (data, _) = try await URLSession.shared.data(from: url)
-                if let image = UIImage(data: data) {
-                    self.thumbnailImage = image
-                    self.isImageLoaded = true
-                }
-            } catch {
-                print("Failed to load image: \(error.localizedDescription)")
+        // Fetch the image asynchronously
+        URLSession.shared.dataTaskPublisher(for: url)
+            .map { UIImage(data: $0.data) ?? UIImage(systemName: "photo")! }
+            .replaceError(with: UIImage(systemName: "photo")!)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] image in
+                self?.thumbnailImage = image
             }
-        }
+            .store(in: &cancellables)
     }
     
+    // For retrieving the current thumbnail image
     func getThumbnailImage() -> UIImage {
         return thumbnailImage
     }
-    
+
     // Custom description for debugging
     var description: String {
         """

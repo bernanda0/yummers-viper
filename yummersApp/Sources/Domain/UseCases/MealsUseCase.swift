@@ -8,6 +8,7 @@
 protocol MealsUseCase {
     func searchMeals(key: String) async throws -> Result<[MealEntity], Error>
     func filterMealsByArea(from meals: [MealEntity], area : String) async throws -> [MealEntity]
+    func getMealAreas() async throws -> Result<[String], Error>
 }
 
 class MealsUseCaseImpl: MealsUseCase {
@@ -34,5 +35,16 @@ class MealsUseCaseImpl: MealsUseCase {
         
         // Return the result
         return filteredMeals
+    }
+    
+    func getMealAreas() async throws -> Result<[String], any Error> {
+        do {
+            let areasDTO = try await mealsRepository.getAreas()
+            
+            let areas = areasDTO.compactMap{ AreaEntity(from: $0).area }
+            return .success(areas)
+        } catch {
+            return .failure(error)
+        }
     }
 }
